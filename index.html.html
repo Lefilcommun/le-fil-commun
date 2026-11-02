@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Le Fil Commun — Faire circuler ce qui compte</title>
+<style>
+  :root {
+    --forest: #123d34;
+    --forest-2: #1e5848;
+    --gold: #e6a91d;
+    --blush: #f0b9a8;
+    --cream: #faf7ef;
+    --paper: #fffdf8;
+    --ink: #23332e;
+    --muted: #65716a;
+    --line: #e7e3d8;
+    --shadow: 0 18px 55px rgba(18,61,52,.10);
+    --radius: 24px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height: 1.55;
+  }
+  a { color: inherit; text-decoration: none; }
+  button, input, select, textarea { font: inherit; }
+  button, a { -webkit-tap-highlight-color: transparent; }
+  .wrap { width: min(1160px, calc(100% - 40px)); margin: 0 auto; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 9px;
+    color: var(--forest-2); font-size: .76rem; font-weight: 750;
+    letter-spacing: .12em; text-transform: uppercase;
+  }
+  .eyebrow::before { content: ""; width: 22px; height: 2px; background: var(--gold); }
+  h1, h2, h3, p { margin-top: 0; }
+  h1, h2, h3 { color: var(--forest); letter-spacing: -.035em; }
+  h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.8rem, 5.6vw, 5.2rem); line-height: .99; font-weight: 500; }
+  h2 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.1rem, 4vw, 3.5rem); line-height: 1.05; font-weight: 500; }
+  h3 { font-size: 1.13rem; line-height: 1.25; }
+  .muted { color: var(--muted); }
+  .btn {
+    min-height: 48px; padding: 12px 19px; border: 1px solid transparent; border-radius: 999px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+    cursor: pointer; font-weight: 750; font-size: .92rem; transition: .2s ease;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-primary { color: white; background: var(--forest); box-shadow: 0 8px 18px rgba(18,61,52,.13); }
+  .btn-primary:hover { background: #0c3029; }
+  .btn-secondary { color: var(--forest); border-color: #bdcfc7; background: rgba(255,255,255,.65); }
+  .btn-secondary:hover { background: white; border-color: var(--forest-2); }
+  .btn-small { min-height: 42px; padding: 9px 15px; font-size: .85rem; }
+  .topbar {
+    position: sticky; top: 0; z-index: 20; background: rgba(255,253,248,.92);
+    backdrop-filter: blur(14px); border-bottom: 1px solid rgba(231,227,216,.8);
+  }
+  .nav { display: flex; align-items: center; justify-content: space-between; min-height: 78px; gap: 24px; }
+  .brand { display: inline-flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .brand-mark { width: 42px; height: 46px; }
+  .brand-name { color: var(--forest); font-family: Georgia, serif; font-size: 1.16rem; line-height: 1; font-weight: 700; letter-spacing: -.025em; }
+  .brand-name small { display: block; margin-top: 5px; font-family: inherit; font-size: .58rem; letter-spacing: .16em; text-transform: uppercase; font-weight: 600; }
+  .nav-links { display: flex; align-items: center; justify-content: center; gap: clamp(12px, 2vw, 27px); }
+  .nav-links a { font-size: .83rem; font-weight: 650; color: #485851; white-space: nowrap; }
+  .nav-links a:hover { color: var(--forest); }
+  .nav-actions { display: flex; align-items: center; gap: 10px; }
+  .menu-toggle { display: none; border: 0; background: none; color: var(--forest); font-size: 1.5rem; cursor: pointer; }
+  .hero {
+    overflow: hidden; position: relative; padding: 76px 0 66px;
+    background: radial-gradient(ellipse at 92% 14%, rgba(230,169,29,.13), transparent 31%), var(--cream);
+  }
+  .hero::after {
+    content: ""; position: absolute; width: 410px; height: 410px; right: -220px; bottom: -275px;
+    border: 1px solid rgba(18,61,52,.11); border-radius: 50%;
+    box-shadow: 0 0 0 34px rgba(18,61,52,.025), 0 0 0 68px rgba(18,61,52,.025);
+  }
+  .hero-grid { display: grid; grid-template-columns: 1.02fr .98fr; align-items: center; gap: 45px; position: relative; z-index: 1; }
+  .hero h1 { max-width: 710px; margin: 19px 0 20px; }
+  .hero h1 em { color: var(--forest-2); font-style: normal; }
+  .hero-copy { max-width: 570px; font-size: 1.08rem; color: #53625b; }
+  .hero-buttons { display: flex; gap: 12px; flex-wrap: wrap; margin: 28px 0 22px; }
+  .microcopy { display: flex; align-items: center; gap: 10px; color: #66736b; font-size: .83rem; }
+  .microcopy .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 4px rgba(230,169,29,.14); }
+  .visual-stage { min-height: 465px; display: grid; place-items: center; position: relative; }
+  .halo { position: absolute; width: 360px; height: 360px; border-radius: 50%; background: #f1ead9; }
+  .halo::before, .halo::after { content: ""; position: absolute; border: 1px solid rgba(18,61,52,.13); border-radius: 50%; inset: 25px; }
+  .halo::after { inset: 53px; }
+  .phone {
+    width: 278px; padding: 12px; border-radius: 36px; background: #183d34;
+    box-shadow: 0 30px 65px rgba(18,61,52,.23); transform: rotate(3deg); position: relative; z-index: 1;
+  }
+  .phone-screen { min-height: 370px; background: #fffdf8; border-radius: 27px; overflow: hidden; padding: 15px; }
+  .phone-top { display: flex; justify-content: space-between; align-items: center; font-size: .64rem; font-weight: 800; color: var(--forest); margin: 0 3px 13px; }
+  .phone-top span:last-child { color: var(--gold); font-size: .75rem; }
+  .phone-greeting { font-family: Georgia, serif; font-size: 1.22rem; color: var(--forest); line-height: 1.1; margin: 0 4px 12px; }
+  .phone-search { border: 1px solid var(--line); padding: 9px 11px; border-radius: 12px; font-size: .64rem; color: #8a928c; margin-bottom: 13px; background: white; }
+  .phone-label { margin: 0 4px 7px; font-size: .61rem; font-weight: 800; color: #59675f; }
+  .listing { display: grid; grid-template-columns: 56px 1fr auto; gap: 9px; align-items: center; padding: 8px; margin-bottom: 8px; border-radius: 13px; background: #f6f3eb; }
+  .item-art { width: 56px; height: 55px; border-radius: 10px; display: grid; place-items: center; font-size: 1.5rem; background: #e6ece5; }
+  .listing:nth-of-type(2) .item-art { background: #f3e6dc; }
+  .listing:nth-of-type(3) .item-art { background: #e8e6f1; }
+  .item-name { color: var(--forest); font-weight: 800; font-size: .66rem; line-height: 1.2; }
+  .item-meta { color: #77817a; font-size: .56rem; margin-top: 4px; }
+  .near { color: #63756a; font-size: .54rem; text-align: right; }
+  .phone-tabs { display: flex; justify-content: space-around; margin-top: 11px; padding-top: 9px; border-top: 1px solid var(--line); font-size: .56rem; color: #748078; }
+  .phone-tabs b { color: var(--forest); }
+  .float-note {
+    position: absolute; z-index: 2; padding: 12px 15px; border: 1px solid #efe8d7; border-radius: 15px;
+    background: rgba(255,253,248,.95); box-shadow: var(--shadow); color: var(--forest); font-size: .78rem; font-weight: 750;
+  }
+  .float-note span { color: var(--muted); display: block; font-size: .68rem; font-weight: 500; }
+  .note-one { left: 0; top: 74px; transform: rotate(-4deg); }
+  .note-two { right: 0; bottom: 58px; transform: rotate(3deg); }
+  .mini-people { display: flex; margin-top: 7px; }
+  .mini-people i { font-style: normal; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: #e7d9bd; border: 2px solid white; margin-right: -5px; font-size: .67rem; }
+  .trust-strip { background: white; border-bottom: 1px solid var(--line); }
+  .trust-inner { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 21px 0; }
+  .trust-inner p { margin: 0; color: #596860; font-size: .82rem; font-weight: 700; }
+  .trust-tags { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+  .trust-tags span { border: 1px solid var(--line); background: #fffdf8; border-radius: 999px; padding: 7px 12px; color: #68756d; font-size: .72rem; }
+  section { padding: 88px 0; }
+  .section-head { max-width: 670px; margin-bottom: 42px; }
+  .section-head h2 { margin: 13px 0 15px; }
+  .section-head p { color: var(--muted); font-size: 1rem; }
+  .features { background: white; }
+  .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .feature-card { min-height: 235px; border: 1px solid var(--line); border-radius: var(--radius); padding: 25px; background: #fffefa; }
+  .feature-icon { width: 48px; height: 48px; border-radius: 16px; display: grid; place-items: center; background: #edf2eb; color: var(--forest); font-size: 1.3rem; margin-bottom: 20px; }
+  .feature-card:nth-child(2) .feature-icon { background: #fcf0d4; }
+  .feature-card:nth-child(3) .feature-icon { background: #f8e9e4; }
+  .feature-card h3 { margin-bottom: 8px; }
+  .feature-card p { color: var(--muted); font-size: .9rem; margin-bottom: 0; }
+  .feature-number { display: block; color: var(--gold); font-size: .72rem; font-weight: 850; letter-spacing: .1em; margin-bottom: 7px; }
+  .occasion { background: var(--forest); color: white; overflow: hidden; position: relative; }
+  .occasion::after { content: "✳"; position: absolute; font-size: 18rem; line-height: 1; color: rgba(255,255,255,.035); right: 3%; top: -30px; }
+  .occasion-grid { display: grid; grid-template-columns: 1.1fr .9fr; align-items: center; gap: 40px; position: relative; z-index: 1; }
+  .occasion h2 { color: white; max-width: 680px; margin: 13px 0 16px; }
+  .occasion p { color: #d3e1d9; max-width: 600px; }
+  .occasion .eyebrow { color: #f5d98f; }
+  .occasion .btn-primary { background: var(--gold); color: #2f321f; }
+  .event-card { padding: 24px; background: #fffdf8; border-radius: 22px; color: var(--ink); box-shadow: 0 20px 60px rgba(0,0,0,.15); transform: rotate(2deg); }
+  .event-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; border-bottom: 1px solid var(--line); padding-bottom: 15px; }
+  .event-card h3 { margin: 0; }
+  .event-pill { border-radius: 999px; color: #765810; background: #faedc9; padding: 6px 9px; font-size: .67rem; font-weight: 800; white-space: nowrap; }
+  .event-item { display: flex; align-items: center; gap: 13px; padding: 14px 0; border-bottom: 1px solid #f0ede5; }
+  .event-emoji { width: 47px; height: 47px; border-radius: 13px; display: grid; place-items: center; background: #f3e6dc; font-size: 1.4rem; }
+  .event-item b { display: block; color: var(--forest); font-size: .87rem; }
+  .event-item small { color: var(--muted); }
+  .event-item .tag { margin-left: auto; color: var(--forest-2); background: #edf2eb; border-radius: 999px; padding: 5px 8px; font-size: .65rem; font-weight: 750; }
+  .event-foot { padding-top: 14px; color: #69766e; font-size: .76rem; }
+  .communities { background: var(--cream); }
+  .community-grid { display: grid; grid-template-columns: .86fr 1.14fr; gap: 55px; align-items: center; }
+  .community-grid h2 { margin: 13px 0 17px; }
+  .community-grid p { color: var(--muted); }
+  .community-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .community-item { padding: 16px; border-radius: 16px; background: white; border: 1px solid #eee9de; display: flex; align-items: center; gap: 11px; font-weight: 750; color: var(--forest); font-size: .88rem; }
+  .community-item span { width: 35px; height: 35px; flex: 0 0 35px; display: grid; place-items: center; border-radius: 12px; background: #f3eddf; font-size: 1.05rem; }
+  .impact { background: white; }
+  .impact-band { display: grid; grid-template-columns: repeat(3, 1fr); border-radius: 24px; background: #f5f2e9; overflow: hidden; }
+  .impact-cell { padding: 26px; border-right: 1px solid #e4dfd2; }
+  .impact-cell:last-child { border: 0; }
+  .impact-cell strong { display: block; color: var(--forest); font-family: Georgia, serif; font-size: 1.45rem; margin-bottom: 7px; }
+  .impact-cell span { color: var(--muted); font-size: .86rem; }
+  .pricing { background: var(--cream); }
+  .pricing-top { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 33px; }
+  .pricing-top .section-head { margin-bottom: 0; }
+  .billing-toggle { display: inline-flex; align-items: center; gap: 10px; padding: 6px; border: 1px solid var(--line); border-radius: 999px; background: white; color: var(--muted); font-size: .78rem; white-space: nowrap; }
+  .billing-toggle button { border: 0; padding: 8px 12px; border-radius: 999px; cursor: pointer; color: inherit; background: transparent; font-weight: 750; }
+  .billing-toggle button.active { color: white; background: var(--forest); }
+  .price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; max-width: 850px; margin: 0 auto; }
+  .price-card { background: white; border: 1px solid var(--line); border-radius: 24px; padding: 28px; position: relative; }
+  .price-card.featured { border: 2px solid var(--forest); box-shadow: var(--shadow); }
+  .price-label { color: var(--forest-2); text-transform: uppercase; letter-spacing: .12em; font-size: .7rem; font-weight: 850; }
+  .price-card h3 { margin: 10px 0 4px; font-size: 1.35rem; }
+  .price-sub { min-height: 42px; color: var(--muted); font-size: .85rem; }
+  .price { color: var(--forest); font-family: Georgia, serif; font-size: 2.8rem; letter-spacing: -.05em; margin: 12px 0 0; }
+  .price small { font-family: inherit; font-size: .9rem; letter-spacing: 0; color: var(--muted); }
+  .price-note { color: #748078; font-size: .72rem; margin: 2px 0 17px; }
+  .price-list { list-style: none; padding: 0; margin: 18px 0 24px; }
+  .price-list li { padding: 8px 0; border-bottom: 1px solid #f0eee8; color: #53625b; font-size: .86rem; }
+  .price-list li::before { content: "✓"; color: var(--forest-2); font-weight: 900; margin-right: 9px; }
+  .price-card .btn { width: 100%; }
+  .test-note { max-width: 850px; margin: 18px auto 0; color: #758078; font-size: .76rem; text-align: center; }
+  .about { background: white; }
+  .about-grid { display: grid; grid-template-columns: .9fr 1.1fr; align-items: center; gap: 60px; }
+  .about-art { min-height: 340px; border-radius: 30px; background: radial-gradient(circle at 50% 45%, #f4e8ca 0 28%, transparent 28.5%), #f8f5ed; display: grid; place-items: center; position: relative; overflow: hidden; }
+  .about-art::before, .about-art::after { content: ""; position: absolute; width: 260px; height: 260px; border: 1px solid rgba(18,61,52,.14); border-radius: 50%; }
+  .about-art::after { width: 330px; height: 330px; }
+  .about-symbol { z-index: 1; width: 150px; height: 170px; }
+  .about-copy h2 { margin: 13px 0 17px; }
+  .about-copy p { color: var(--muted); }
+  .about-quote { margin-top: 22px; padding-left: 17px; border-left: 3px solid var(--gold); color: var(--forest); font-family: Georgia, serif; font-size: 1.22rem; }
+  .contact { background: var(--forest); color: white; }
+  .contact-grid { display: grid; grid-template-columns: 1fr .9fr; gap: 60px; align-items: center; }
+  .contact h2 { color: white; margin: 13px 0 16px; }
+  .contact p { color: #d2e0d8; max-width: 510px; }
+  .contact .eyebrow { color: #f5d98f; }
+  .contact-card { padding: 25px; border-radius: 22px; background: white; color: var(--ink); }
+  .contact-card h3 { margin-bottom: 6px; }
+  .contact-card > p { color: var(--muted); font-size: .85rem; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+  label { display: block; color: #52625a; font-size: .74rem; font-weight: 750; margin: 10px 0 6px; }
+  input, select, textarea { width: 100%; border: 1px solid #dedfd7; border-radius: 11px; padding: 11px 12px; color: var(--ink); background: #fffefa; outline: none; }
+  input:focus, select:focus, textarea:focus { border-color: var(--forest-2); box-shadow: 0 0 0 3px rgba(30,88,72,.1); }
+  textarea { min-height: 82px; resize: vertical; }
+  .contact-card .btn { width: 100%; margin-top: 14px; }
+  .form-status { min-height: 20px; margin: 10px 0 0; color: var(--forest-2); font-size: .83rem; font-weight: 700; }
+  footer { padding: 30px 0; background: #0d3029; color: #d2e0d8; }
+  .footer-inner { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+  footer .brand-name { color: white; }
+  footer .brand-mark { filter: brightness(1.8); }
+  .footer-links { display: flex; flex-wrap: wrap; gap: 18px; font-size: .78rem; }
+  .footer-links a:hover { color: white; }
+  .copyright { font-size: .72rem; color: #a9beb3; }
+  .modal-backdrop { display: none; position: fixed; inset: 0; z-index: 40; background: rgba(9,31,26,.58); padding: 20px; place-items: center; }
+  .modal-backdrop.open { display: grid; }
+  .modal { width: min(490px, 100%); border-radius: 24px; padding: 28px; background: var(--paper); box-shadow: 0 30px 90px rgba(0,0,0,.25); position: relative; }
+  .modal-close { position: absolute; right: 16px; top: 14px; border: 0; background: transparent; color: var(--forest); font-size: 1.5rem; cursor: pointer; }
+  .modal h2 { font-size: 2rem; margin: 10px 0; }
+  .modal p { color: var(--muted); }
+  .modal-flow { display: grid; gap: 9px; margin: 18px 0 22px; }
+  .modal-flow div { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 12px; background: #f3f1e9; color: var(--forest); font-weight: 700; font-size: .86rem; }
+  .modal-flow b { width: 25px; height: 25px; display: grid; place-items: center; border-radius: 50%; background: #f8e9c5; }
+  @media (max-width: 980px) {
+    .nav-links { gap: 12px; }
+    .nav-links a { font-size: .76rem; }
+    .nav-actions .btn { padding-inline: 13px; }
+    .hero-grid { gap: 20px; }
+    .note-one { left: -8px; }
+    .note-two { right: -5px; }
+  }
+  @media (max-width: 760px) {
+    .wrap { width: min(100% - 30px, 560px); }
+    .nav { min-height: 68px; }
+    .menu-toggle { display: block; }
+    .nav-links { display: none; position: absolute; top: 68px; left: 0; right: 0; padding: 12px 20px 18px; background: var(--paper); border-bottom: 1px solid var(--line); align-items: stretch; }
+    .nav-links.open { display: flex; flex-direction: column; }
+    .nav-links a { padding: 8px 4px; font-size: .9rem; }
+    .nav-actions { margin-left: auto; }
+    .nav-actions .btn { min-height: 39px; padding: 8px 12px; font-size: .78rem; }
+    .hero { padding: 54px 0 48px; }
+    .hero-grid, .occasion-grid, .community-grid, .about-grid, .contact-grid { grid-template-columns: 1fr; }
+    .hero-grid { gap: 6px; }
+    .hero-copy { font-size: 1rem; }
+    .visual-stage { min-height: 420px; margin-top: 7px; }
+    .halo { width: 310px; height: 310px; }
+    .phone { width: 248px; }
+    .phone-screen { min-height: 350px; }
+    .note-one { left: 0; top: 55px; }
+    .note-two { right: 0; bottom: 35px; }
+    .trust-inner { align-items: flex-start; flex-direction: column; }
+    .trust-tags { justify-content: flex-start; }
+    section { padding: 65px 0; }
+    .feature-grid { grid-template-columns: 1fr; }
+    .feature-card { min-height: 0; }
+    .occasion-grid { gap: 25px; }
+    .community-grid, .about-grid, .contact-grid { gap: 30px; }
+    .community-list { grid-template-columns: 1fr 1fr; }
+    .impact-band { grid-template-columns: 1fr; }
+    .impact-cell { border-right: 0; border-bottom: 1px solid #e4dfd2; }
+    .impact-cell:last-child { border-bottom: 0; }
+    .pricing-top { align-items: flex-start; flex-direction: column; }
+    .price-grid { grid-template-columns: 1fr; }
+    .about-art { min-height: 280px; order: 2; }
+    .about-copy { order: 1; }
+    .contact-grid { gap: 24px; }
+    .footer-inner { align-items: flex-start; flex-direction: column; }
+  }
+  @media (max-width: 420px) {
+    h1 { font-size: 2.65rem; }
+    .nav-actions .btn { display: none; }
+    .community-list { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; gap: 0; }
+    .visual-stage { min-height: 380px; }
+    .phone { transform: scale(.92) rotate(3deg); }
+    .note-one { top: 32px; }
+    .note-two { bottom: 20px; }
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap nav">
+    <a class="brand" href="#top" aria-label="Le Fil Commun, accueil">
+      <svg class="brand-mark" viewBox="0 0 60 66" role="img" aria-label="Symbole du Fil Commun">
+        <path d="M8 21 30 5l22 16" fill="none" stroke="#123d34" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="14" y="21" width="32" height="39" rx="7" fill="none" stroke="#123d34" stroke-width="2.8"/>
+        <path d="M21 29h18v8H27v7h12v8H24v-7" fill="none" stroke="#123d34" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="21" cy="29" r="2.3" fill="#e6a91d"/><circle cx="39" cy="40" r="2.3" fill="#e6a91d"/><circle cx="24" cy="52" r="2.3" fill="#e6a91d"/>
+        <path d="M48 18c4-1 5-4 6-8M49 17c4 1 7 0 9-3" fill="none" stroke="#123d34" stroke-width="1.7" stroke-linecap="round"/>
+        <path d="M49 15c-4-5-1-8 2-7 2 1 1 4-2 7Zm1 1c4-5 8-4 7-1-1 2-4 2-7 1Z" fill="#e6a91d"/>
+      </svg>
+      <span class="brand-name">Le Fil Commun<small>Faire circuler ce qui compte</small></span>
+    </a>
+    <nav class="nav-links" id="navLinks" aria-label="Navigation principale">
+      <a href="#top">Accueil</a>
+      <a href="#fonctionnalites">Fonctionnalités</a>
+      <a href="#abonnement">Abonnement</a>
+      <a href="#organisations">Pour Entreprises</a>
+      <a href="#apropos">À propos</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="btn btn-primary btn-small" data-open-demo>Découvrir l’app <span aria-hidden="true">→</span></button>
+      <button class="menu-toggle" id="menuToggle" aria-label="Ouvrir le menu" aria-expanded="false">☰</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero" id="top">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow">Des communautés locales qui font circuler</span>
+        <h1>Et si ce dont vous avez besoin <em>existait déjà près de chez vous&nbsp;?</em></h1>
+        <p class="hero-copy">Le Fil Commun vous aide à trouver, échanger, prêter ou transmettre les objets qui dorment dans les foyers et les communautés. On commence par les vêtements et les accessoires. L’idée : faire mieux avec l’existant, ensemble.</p>
+        <div class="hero-buttons">
+          <a class="btn btn-primary" href="#fonctionnalites">Comment ça marche <span aria-hidden="true">↓</span></a>
+          <a class="btn btn-secondary" href="#contact">Créer une communauté</a>
+        </div>
+        <div class="microcopy"><span class="dot"></span> Échange de proximité · Communauté de confiance · Moins d’achats évitables</div>
+      </div>
+      <div class="visual-stage" aria-label="Aperçu de l’application Le Fil Commun">
+        <div class="halo"></div>
+        <div class="float-note note-one">Une tenue pour le grand jour<span>À deux rues, dans votre communauté</span></div>
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="phone-top"><span>LE FIL COMMUN</span><span>● ● ●</span></div>
+            <div class="phone-greeting">Bonjour, Camille<br>Votre cercle bouge ✨</div>
+            <div class="phone-search">⌕ &nbsp; Je cherche quelque chose…</div>
+            <div class="phone-label">Près de vous cette semaine</div>
+            <div class="listing">
+              <div class="item-art">🧥</div>
+              <div><div class="item-name">Veste de cérémonie</div><div class="item-meta">Taille 38 · Très bon état</div></div>
+              <div class="near">À prêter<br>200 m</div>
+            </div>
+            <div class="listing">
+              <div class="item-art">👞</div>
+              <div><div class="item-name">Chaussures de ville</div><div class="item-meta">Pointure 39 · Don</div></div>
+              <div class="near">À donner<br>École</div>
+            </div>
+            <div class="listing">
+              <div class="item-art">👜</div>
+              <div><div class="item-name">Sac pour la soirée</div><div class="item-meta">Proposé par Nora</div></div>
+              <div class="near">À échanger<br>Voisinage</div>
+            </div>
+            <div class="phone-tabs"><b>Explorer</b><span>Mon cercle</span><span>Mes objets</span></div>
+          </div>
+        </div>
+        <div class="float-note note-two">Un cercle de confiance<span>Des personnes que vous croisez déjà</span><div class="mini-people"><i>👩🏽</i><i>👨🏻</i><i>👩🏾</i><i>＋</i></div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="trust-strip">
+    <div class="wrap trust-inner">
+      <p>Un même fil, des communautés qui se connaissent.</p>
+      <div class="trust-tags"><span>Voisinage & copropriétés</span><span>Écoles & campus</span><span>Entreprises</span><span>Associations & communes</span></div>
+    </div>
+  </div>
+
+  <section class="features" id="fonctionnalites">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Comment ça marche</span>
+        <h2>Un objet qui dort peut répondre à un besoin.</h2>
+        <p>Le Fil Commun rapproche les objets disponibles et les personnes qui peuvent en faire usage, dans un espace local réservé à une communauté.</p>
+      </div>
+      <div class="feature-grid">
+        <article class="feature-card">
+          <div class="feature-icon" aria-hidden="true">⌕</div>
+          <span class="feature-number">01 · RETROUVER</span>
+          <h3>Je cherche ce dont j’ai besoin</h3>
+          <p>Parcourez les objets proposés dans votre cercle : vêtements, chaussures et accessoires pour commencer, puis d’autres objets du quotidien.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon" aria-hidden="true">↔</div>
+          <span class="feature-number">02 · FAIRE CIRCULER</span>
+          <h3>Je prête, j’échange ou je donne</h3>
+          <p>Un espace commun facilite la mise en relation et l’organisation d’un échange en main propre, dans un lieu que vous fréquentez déjà.</p>
+        </article>
+        <article class="feature-card">
+          <div class="feature-icon" aria-hidden="true">✳</div>
+          <span class="feature-number">03 · TRANSMETTRE</span>
+          <h3>Je choisis le prochain usage</h3>
+          <p>Donnez une nouvelle utilité à un objet lors d’un changement de vie, d’un événement ou simplement parce qu’il ne vous sert plus.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="occasion">
+    <div class="wrap occasion-grid">
+      <div>
+        <span class="eyebrow">Pour les moments qui comptent</span>
+        <h2>Une occasion spéciale ne devrait pas imposer un achat oublié ensuite.</h2>
+        <p>Bal de fin d’année, remise de diplôme, entretien, mariage ou cérémonie : trouvez une tenue ou des accessoires dans votre communauté. Empruntez, échangez ou louez une pièce que sa propriétaire souhaite garder.</p>
+        <a class="btn btn-primary" href="#contact">Imaginer un échange pour mon événement <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="event-card">
+        <div class="event-card-top"><div><h3>La cérémonie approche 🎓</h3><small class="muted">Cercle du campus · 12 propositions</small></div><span class="event-pill">Échange local</span></div>
+        <div class="event-item"><span class="event-emoji">🧥</span><div><b>Veste de costume</b><small>Portée pour un entretien, prête pour la cérémonie</small></div><span class="tag">À prêter</span></div>
+        <div class="event-item"><span class="event-emoji">👠</span><div><b>Chaussures habillées</b><small>Remises en main propre à l’école</small></div><span class="tag">À échanger</span></div>
+        <div class="event-item"><span class="event-emoji">👗</span><div><b>Robe de cérémonie</b><small>Une nouvelle occasion de la porter</small></div><span class="tag">À louer</span></div>
+        <div class="event-foot">Un rendez-vous au même endroit. Pas d’envoi postal à organiser.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="communities" id="organisations">
+    <div class="wrap community-grid">
+      <div>
+        <span class="eyebrow">Pour Entreprises et organisations</span>
+        <h2>Un cercle local, au cœur de vos lieux de vie.</h2>
+        <p>Le Fil Commun aide une organisation à lancer et animer une communauté de partage : elle donne accès au cercle, ses membres font vivre les échanges.</p>
+        <p>Une copropriété, une école, une PME, une mairie ou une association peut ainsi créer un point de rencontre autour de la sobriété, du réemploi et de l’entraide.</p>
+        <a class="btn btn-primary" href="#contact">Parler d’un projet pilote <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="community-list">
+        <div class="community-item"><span>🏘️</span> Syndics & copropriétés</div>
+        <div class="community-item"><span>🎓</span> Lycées & établissements</div>
+        <div class="community-item"><span>🏢</span> PME & équipes RH</div>
+        <div class="community-item"><span>🏛️</span> Mairies & collectivités</div>
+        <div class="community-item"><span>⚽</span> Clubs & associations</div>
+        <div class="community-item"><span>🧵</span> Artisans de proximité</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="impact">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">La valeur ne se mesure pas qu’en euros</span>
+        <h2>Ce qui circule crée de la valeur pour tout le cercle.</h2>
+        <p>Le projet vise à rendre visibles les usages et les liens qui se créent. Les indicateurs seront construits et testés avec les communautés pilotes.</p>
+      </div>
+      <div class="impact-band">
+        <div class="impact-cell"><strong>Achats différés</strong><span>Les achats que les membres disent avoir évités ou remis à plus tard.</span></div>
+        <div class="impact-cell"><strong>Objets remis en usage</strong><span>Prêts, dons, échanges et transmissions organisés par le cercle.</span></div>
+        <div class="impact-cell"><strong>Liens de proximité</strong><span>Des échanges réalisés entre personnes qui partagent un lieu ou une communauté.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pricing" id="abonnement">
+    <div class="wrap">
+      <div class="pricing-top">
+        <div class="section-head">
+          <span class="eyebrow">Abonnement</span>
+          <h2>Le cercle commence simplement.</h2>
+          <p>Des tarifs de test pour explorer une formule accessible aux membres et soutenable pour les communautés partenaires.</p>
+        </div>
+        <div class="billing-toggle" role="group" aria-label="Période de facturation">
+          <button type="button" class="active" data-period="monthly">Mensuel</button>
+          <button type="button" data-period="annual">Annuel <span style="color:var(--gold)">−15%</span></button>
+        </div>
+      </div>
+      <div class="price-grid">
+        <article class="price-card">
+          <span class="price-label">Pour les particuliers</span>
+          <h3>Membre du cercle</h3>
+          <p class="price-sub">Pour chercher, proposer et faire circuler des objets dans sa communauté.</p>
+          <p class="price"><span data-monthly="2,90" data-annual="2,47">2,90</span><small> € / mois</small></p>
+          <p class="price-note" data-price-note>Sans engagement · tarif indicatif à tester</p>
+          <ul class="price-list">
+            <li>Accès à votre communauté locale</li>
+            <li>Recherche, prêt, don et échange</li>
+            <li>Suivi de vos objets et de vos échanges</li>
+            <li>Indicateurs personnels de valeur créée</li>
+          </ul>
+          <button class="btn btn-secondary" data-open-demo>Découvrir l’application</button>
+        </article>
+        <article class="price-card featured">
+          <span class="price-label">Pour les organisations</span>
+          <h3>Communauté partenaire</h3>
+          <p class="price-sub">Pour lancer un cercle au sein d’un établissement, d’une entreprise ou d’un quartier.</p>
+          <p class="price"><span data-monthly="49" data-annual="42">49</span><small> € / mois</small></p>
+          <p class="price-note" data-org-note>Par communauté · tarif pilote indicatif</p>
+          <ul class="price-list">
+            <li>Un espace de partage aux couleurs du cercle</li>
+            <li>Outils d’invitation et d’animation</li>
+            <li>Organisation d’échanges et d’événements</li>
+            <li>Indicateurs d’usage et bilan de communauté</li>
+          </ul>
+          <a class="btn btn-primary" href="#contact">Tester une communauté</a>
+        </article>
+      </div>
+      <p class="test-note">Ces montants sont des hypothèses de travail pour tester l’intérêt et la disposition à payer. Ils ne constituent pas une offre commerciale définitive.</p>
+    </div>
+  </section>
+
+  <section class="about" id="apropos">
+    <div class="wrap about-grid">
+      <div class="about-art" aria-hidden="true">
+        <svg class="about-symbol" viewBox="0 0 150 170">
+          <path d="M22 47 75 10l53 37" fill="none" stroke="#123d34" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="36" y="46" width="78" height="108" rx="17" fill="none" stroke="#123d34" stroke-width="5"/>
+          <path d="M54 67h43v20H69v19h29v21H61v-16" fill="none" stroke="#123d34" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="54" cy="67" r="5" fill="#e6a91d"/><circle cx="98" cy="96" r="5" fill="#e6a91d"/><circle cx="61" cy="127" r="5" fill="#e6a91d"/>
+          <path d="M118 43c13-8 15-18 17-28" fill="none" stroke="#123d34" stroke-width="3" stroke-linecap="round"/>
+          <path d="M128 28c-12-15-3-23 3-17 5 5 1 12-3 17Zm2 3c9-14 22-12 18-4-3 6-11 6-18 4Z" fill="#e6a91d"/>
+        </svg>
+      </div>
+      <div class="about-copy">
+        <span class="eyebrow">À propos</span>
+        <h2>Le fil qui relie ce qui existe à ceux qui en ont besoin.</h2>
+        <p>Le Fil Commun part d’une idée simple : dans nos foyers, nos écoles et nos lieux de travail, des objets peu utilisés peuvent répondre aux besoins d’autres personnes. Pourtant, les occasions de les retrouver et de les transmettre restent dispersées.</p>
+        <p>Nous créons des communautés de confiance pour rendre ces échanges plus simples, plus proches et plus visibles. Le vêtement est notre premier terrain d’expérimentation ; notre ambition est de faire circuler ce qui compte.</p>
+        <div class="about-quote">« Moins acheter. Mieux utiliser. Faire circuler près de chez soi. »</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact" id="contact">
+    <div class="wrap contact-grid">
+      <div>
+        <span class="eyebrow">Contact & communautés pilotes</span>
+        <h2>Et si votre communauté était le prochain cercle&nbsp;?</h2>
+        <p>Vous représentez une école, une entreprise, une copropriété, une collectivité ou une association ? Vous souhaitez participer comme membre ? Parlons de votre besoin et imaginons un premier test.</p>
+        <p>Un échange local peut commencer par une seule occasion, quelques objets et des personnes volontaires.</p>
+      </div>
+      <form class="contact-card" id="interestForm">
+        <h3>Manifester mon intérêt</h3>
+        <p>Formulaire de démonstration pour cette maquette.</p>
+        <div class="form-row">
+          <div><label for="name">Votre nom</label><input id="name" name="name" placeholder="Camille Martin" required></div>
+          <div><label for="email">Votre e-mail</label><input id="email" name="email" type="email" placeholder="camille@exemple.fr" required></div>
+        </div>
+        <label for="profile">Je vous contacte en tant que…</label>
+        <select id="profile" name="profile">
+          <option>Particulier / membre potentiel</option>
+          <option>École ou établissement</option>
+          <option>Entreprise / RH</option>
+          <option>Copropriété / syndic</option>
+          <option>Collectivité / association</option>
+          <option>Artisan / partenaire local</option>
+        </select>
+        <label for="message">Votre idée ou votre besoin</label>
+        <textarea id="message" name="message" placeholder="Je voudrais tester un cercle pour…"></textarea>
+        <button class="btn btn-primary" type="submit">Envoyer mon intérêt <span aria-hidden="true">→</span></button>
+        <p class="form-status" id="formStatus" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap footer-inner">
+    <a class="brand" href="#top">
+      <svg class="brand-mark" viewBox="0 0 60 66" aria-hidden="true">
+        <path d="M8 21 30 5l22 16" fill="none" stroke="#e6a91d" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="14" y="21" width="32" height="39" rx="7" fill="none" stroke="#e6a91d" stroke-width="2.8"/>
+        <path d="M21 29h18v8H27v7h12v8H24v-7" fill="none" stroke="#e6a91d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="21" cy="29" r="2.3" fill="#f0b9a8"/><circle cx="39" cy="40" r="2.3" fill="#f0b9a8"/><circle cx="24" cy="52" r="2.3" fill="#f0b9a8"/>
+      </svg>
+      <span class="brand-name">Le Fil Commun<small>Faire circuler ce qui compte</small></span>
+    </a>
+    <div class="footer-links"><a href="#fonctionnalites">Fonctionnalités</a><a href="#abonnement">Abonnement</a><a href="#organisations">Organisations</a><a href="#contact">Contact</a></div>
+    <span class="copyright">© 2026 · Projet en expérimentation</span>
+  </div>
+</footer>
+
+<div class="modal-backdrop" id="demoModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <button class="modal-close" id="modalClose" aria-label="Fermer">×</button>
+    <span class="eyebrow">Découvrir l’application</span>
+    <h2 id="modalTitle">Le bon objet, dans le bon cercle.</h2>
+    <p>La maquette présente le parcours envisagé pour les membres et les communautés pilotes.</p>
+    <div class="modal-flow">
+      <div><b>1</b> Rejoindre un cercle de confiance</div>
+      <div><b>2</b> Chercher ou proposer un objet</div>
+      <div><b>3</b> Organiser un échange de proximité</div>
+      <div><b>4</b> Faire le bilan de ce qui a circulé</div>
+    </div>
+    <a class="btn btn-primary" href="#contact" id="modalContact">Rejoindre les pilotes <span aria-hidden="true">→</span></a>
+  </div>
+</div>
+
+<script>
+  const menuToggle = document.getElementById('menuToggle');
+  const navLinks = document.getElementById('navLinks');
+  menuToggle.addEventListener('click', () => {
+    const open = navLinks.classList.toggle('open');
+    menuToggle.setAttribute('aria-expanded', String(open));
+    menuToggle.textContent = open ? '×' : '☰';
+  });
+  navLinks.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+    navLinks.classList.remove('open');
+    menuToggle.setAttribute('aria-expanded', 'false');
+    menuToggle.textContent = '☰';
+  }));
+
+  const modal = document.getElementById('demoModal');
+  const closeModal = () => modal.classList.remove('open');
+  document.querySelectorAll('[data-open-demo]').forEach(button => button.addEventListener('click', () => modal.classList.add('open')));
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  modal.addEventListener('click', event => { if (event.target === modal) closeModal(); });
+  document.addEventListener('keydown', event => { if (event.key === 'Escape') closeModal(); });
+  document.getElementById('modalContact').addEventListener('click', closeModal);
+
+  document.querySelectorAll('[data-period]').forEach(button => button.addEventListener('click', () => {
+    document.querySelectorAll('[data-period]').forEach(item => item.classList.toggle('active', item === button));
+    const annual = button.dataset.period === 'annual';
+    document.querySelectorAll('.price [data-monthly]').forEach(price => {
+      price.textContent = annual ? price.dataset.annual : price.dataset.monthly;
+    });
+    document.querySelectorAll('.price-note').forEach(note => {
+      note.textContent = annual ? 'Facturation annuelle · hypothèse tarifaire à tester' : 'Sans engagement · tarif indicatif à tester';
+    });
+    document.querySelector('[data-org-note]').textContent = annual
+      ? 'Par communauté · facturation annuelle indicative'
+      : 'Par communauté · tarif pilote indicatif';
+  }));
+
+  document.getElementById('interestForm').addEventListener('submit', event => {
+    event.preventDefault();
+    document.getElementById('formStatus').textContent =
+      'Merci ! Dans cette maquette, vos informations ne sont pas transmises.';
+    event.target.reset();
+  });
+</script>
+</body>
+</html>
